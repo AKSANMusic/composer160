@@ -138,9 +138,10 @@ def test_nsga2_evolution_and_archetypes():
         seed=42,
     )
 
-    assert len(archetypes) == 4
+    assert len(archetypes) == 5
     names = [arc.name for arc in archetypes]
     assert "The Purist" in names
+    assert "The Electronic Neoclassical" in names
     assert "The Rebel" in names
     assert "The Avant-Garde" in names
     assert "The Knee-Point" in names
@@ -163,24 +164,24 @@ def test_repl_pareto_and_pick_commands(capsys):
     assert "PARETO FRONTIER ARCHETYPES" in out
     assert "THE PURIST" in out
     assert "THE REBEL" in out
-    assert len(session.pareto_candidates) == 4
+    assert len(session.pareto_candidates) == 5
 
-    # 2. Pick candidate 2 ("The Rebel")
-    assert session.handle_command("/pick 2") is True
+    # 2. Pick candidate 3 ("The Rebel")
+    assert session.handle_command("/pick 3") is True
     out2 = capsys.readouterr().out
-    assert "Selected [2] 'The Rebel' as active vector" in out2
+    assert "Selected [3] 'The Rebel' as active vector" in out2
     assert session.active_vector is not None
 
 
 def test_cli_pareto_flag_json(capsys):
-    """Verify CLI --pareto flag outputs valid JSON with 4 archetypes."""
+    """Verify CLI --pareto flag outputs valid JSON with 5 archetypes."""
     ret = main(["--pareto", "-p", "Fast dark rebellion", "-f", "json", "--no-llm"])
     assert ret == 0
 
     captured = capsys.readouterr()
     data = json.loads(captured.out)
     assert "pareto_archetypes" in data
-    assert len(data["pareto_archetypes"]) == 4
+    assert len(data["pareto_archetypes"]) == 5
 
     names = [a["name"] for a in data["pareto_archetypes"]]
     assert "The Purist" in names

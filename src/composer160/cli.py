@@ -170,7 +170,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             lines = [
                 "# COMPOSER-160 Multi-Objective Pareto Frontier Report",
                 "",
-                "Evolved 4 diverse, non-dominated archetypes balancing Intent, Identity, Novelty, and Validity:",
+                f"Evolved {len(archetypes)} diverse, non-dominated archetypes balancing Intent, Identity, Novelty, and Validity:",
                 "",
             ]
             for i, arc in enumerate(archetypes, start=1):

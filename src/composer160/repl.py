@@ -260,7 +260,7 @@ class REPLSession:
             print(f"    • Style:    {arc.suno_style[:90]}...")
             print(f"    • Map:      {arc.section_map}")
             print("-" * 78)
-        print("Type `/pick <1-4>` to set any archetype as your active vector, or `/show` to inspect.")
+        print("Type `/pick <1-5>` to set any archetype as your active vector, or `/show` to inspect.")
         print("=" * 78 + "\n")
 
     def _handle_pick(self, selection: str) -> None:
@@ -297,8 +297,8 @@ class REPLSession:
             "  /load <file.c160>   Load a vector from a .c160 JSON file\n"
             "  /compact            Print compact bracket notation (§5)\n"
             "  /validate           Run C1–C7 mathematical validation checks\n"
-            "  /pareto [prompt]    Run NSGA-II multi-objective optimizer and view 4 Pareto archetypes\n"
-            "  /pick <1-4>         Select one of the 4 Pareto archetypes as active vector\n"
+            "  /pareto [prompt]    Run NSGA-II multi-objective optimizer and view 5 Pareto archetypes\n"
+            "  /pick <1-5>         Select one of the 5 Pareto archetypes as active vector\n"
             "  /lyrics [text|file] View or update session lyrics\n"
             "  /reset              Reset active vector to session start\n"
             "  /help               Show this help message\n"

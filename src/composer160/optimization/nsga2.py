@@ -379,48 +379,76 @@ def select_archetypes(
             section_map=map_str,
         )
 
+    selected_indices: set[int] = set()
+
+    def pick_best(metric_fn) -> tuple[ParameterVector, tuple[float, float, float, float]]:
+        candidates = [
+            (idx, c) for idx, c in enumerate(pareto_candidates)
+            if idx not in selected_indices
+        ]
+        if not candidates:
+            candidates = list(enumerate(pareto_candidates))
+        best_idx, best_cand = max(candidates, key=lambda pair: metric_fn(pair[1]))
+        selected_indices.add(best_idx)
+        return best_cand
+
     # 1. The Purist: highest identity score (scores[1])
-    purist_candidate = max(pareto_candidates, key=lambda c: (c[1][1], c[1][3]))
+    purist_candidate = pick_best(lambda c: (c[1][1], c[1][3]))
 
-    # 2. The Rebel: highest intent score (scores[0])
-    rebel_candidate = max(pareto_candidates, key=lambda c: (c[1][0], c[1][3]))
+    # 2. The Electronic Neoclassical / Intent: highest intent score (scores[0])
+    intent_candidate = pick_best(lambda c: (c[1][0], c[1][3]))
 
-    # 3. The Avant-Garde: highest novelty score (scores[2])
-    avant_candidate = max(pareto_candidates, key=lambda c: (c[1][2], c[1][3]))
+    # 3. The Rebel: high tension, dramatic surge, and climax
+    def rebel_metric(cand: tuple[ParameterVector, tuple[float, float, float, float]]) -> float:
+        vec = cand[0]
+        tension = int(vec.get(103)) if str(vec.get(103)).isdigit() else 3
+        climax = int(vec.get(95)) if str(vec.get(95)).isdigit() else 3
+        return cand[1][0] * 0.4 + (tension / 5.0) * 0.3 + (climax / 5.0) * 0.3
 
-    # 4. The Knee-Point: balanced geometric product across all 4 objectives
+    rebel_candidate = pick_best(rebel_metric)
+
+    # 4. The Avant-Garde: highest novelty score (scores[2])
+    avant_candidate = pick_best(lambda c: (c[1][2], c[1][3]))
+
+    # 5. The Knee-Point: balanced geometric product across all 4 objectives
     def balance_metric(cand: tuple[ParameterVector, tuple[float, float, float, float]]) -> float:
         s = cand[1]
-        # Product of scores with high validity weighting
         return s[0] * s[1] * (0.5 + s[2]) * (s[3] ** 2)
 
-    knee_candidate = max(pareto_candidates, key=balance_metric)
+    knee_candidate = pick_best(balance_metric)
 
     return [
         format_archetype(
             name="The Purist",
             arc_id="alpha",
-            desc="Maximum adherence to the canonical acoustic AKSAN heritage (minimalist brutalism, intimate room).",
+            desc="Maximum adherence to the canonical acoustic heritage (intimate, raw, zero electronic distractions).",
             vec=purist_candidate[0],
             scores=purist_candidate[1],
         ),
         format_archetype(
-            name="The Rebel",
+            name="The Electronic Neoclassical",
             arc_id="beta",
-            desc="Maximum focus on the user's emotional peak, high dynamic lift, and fierce vocal defiance.",
+            desc="Focused on synthesized ambient textures: breathy bansuri lead, organ pedal pad, and marimba broken chords.",
+            vec=intent_candidate[0],
+            scores=intent_candidate[1],
+        ),
+        format_archetype(
+            name="The Rebel",
+            arc_id="gamma",
+            desc="Maximum emotional tension: powerful dynamic surge, raw untamed wail in the bridge, and intense climax.",
             vec=rebel_candidate[0],
             scores=rebel_candidate[1],
         ),
         format_archetype(
             name="The Avant-Garde",
-            arc_id="gamma",
-            desc="Experimental modal colorations, asymmetric meter, rich harmonic tension, and spatial depth.",
+            arc_id="delta",
+            desc="Experimental modal colorations, microtonal Kurdish intervals, asymmetric meter, and infinite cathedral decay.",
             vec=avant_candidate[0],
             scores=avant_candidate[1],
         ),
         format_archetype(
             name="The Knee-Point",
-            arc_id="delta",
+            arc_id="epsilon",
             desc="The optimal mathematical sweet spot balancing identity, intent, novelty, and rule compliance.",
             vec=knee_candidate[0],
             scores=knee_candidate[1],
